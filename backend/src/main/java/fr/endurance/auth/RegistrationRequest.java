@@ -1,5 +1,6 @@
 package fr.endurance.auth;
 
+import fr.endurance.user.Emails;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,4 +20,9 @@ public record RegistrationRequest(
         @NotBlank(message = "Le nom est obligatoire")
         @Size(max = 60, message = "60 caractères maximum")
         String displayName) {
+
+    /** Normalisé dès la construction : la validation voit déjà l'email propre. */
+    public RegistrationRequest {
+        email = Emails.normalize(email);
+    }
 }

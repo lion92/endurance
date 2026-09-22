@@ -49,6 +49,15 @@ class RegistrationApiTest {
     }
 
     @Test
+    void la_casse_et_les_espaces_de_l_email_ne_creent_pas_un_second_compte() {
+        String email = uniqueEmail();
+        register(email, "un-mot-de-passe-solide", "Léa");
+
+        assertThat(register("  " + email.toUpperCase() + " ", "un-autre-mot-de-passe", "Tom"))
+                .hasStatus(HttpStatus.CONFLICT);
+    }
+
+    @Test
     void un_mot_de_passe_trop_court_est_refuse() {
         assertThat(register(uniqueEmail(), "court", "Léa"))
                 .hasStatus(HttpStatus.BAD_REQUEST)
