@@ -1,13 +1,15 @@
 package fr.endurance.workout;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static fr.endurance.support.Workouts.idOf;
+import static fr.endurance.support.Workouts.json;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.time.LocalDate;
 
-import com.jayway.jsonpath.JsonPath;
 import fr.endurance.support.Accounts;
 import fr.endurance.support.IntegrationTest;
+import fr.endurance.support.Workouts;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,7 @@ class WorkoutApiTest {
 
     @Test
     void enregistrer_une_seance_calcule_ses_calories() {
-        MvcTestResult created = create(lea, workout("RUNNING", TODAY, 60, "10.5", 7));
+        MvcTestResult created = create(lea, json("RUNNING", TODAY, 60, "10.5", 7));
 
         assertThat(created).hasStatus(HttpStatus.CREATED);
         assertThat(created).hasHeader("Location", "/api/workouts/" + idOf(created));
@@ -44,9 +46,9 @@ class WorkoutApiTest {
 
     @Test
     void la_liste_est_triee_de_la_plus_recente_a_la_plus_ancienne() {
-        create(lea, workout("WALKING", TODAY.minusDays(3), 30, null, 3));
-        create(lea, workout("CYCLING", TODAY, 45, "20", 6));
-        create(lea, workout("YOGA", TODAY.minusDays(1), 60, null, 2));
+        create(lea, json("WALKING", TODAY.minusDays(3), 30, null, 3));
+        create(lea, json("CYCLING", TODAY, 45, "20", 6));
+        create(lea, json("YOGA", TODAY.minusDays(1), 60, null, 2));
 
         assertThat(mvc.get().uri("/api/workouts").cookie(lea))
                 .hasStatus(HttpStatus.OK)
@@ -58,7 +60,7 @@ class WorkoutApiTest {
     @Test
     void la_liste_est_paginee() {
         for (int day = 0; day < 3; day++) {
-            create(lea, workout("RUNNING", TODAY.minusDays(day), 30, "5", 5));
+            create(lea, json("RUNNING", TODAY.minusDays(day), 30, "5", 5));
         }
 
         MvcTestResult page = mvc.get().uri("/api/workouts?page=1&size=2").cookie(lea).exchange();
@@ -71,7 +73,7 @@ class WorkoutApiTest {
     @Test
     void personne_ne_voit_les_seances_d_un_autre() {
         Cookie tom = new Accounts(mvc).loggedInAthlete();
-        long leasRun = idOf(create(lea, workout("RUNNING", TODAY, 60, "10", 7)));
+        long leasRun = idOf(create(lea, json("RUNNING", TODAY, 60, "10", 7)));
 
         assertThat(mvc.get().uri("/api/workouts").cookie(tom))
                 .bodyJson().extractingPath("$.totalItems").isEqualTo(0);
@@ -83,11 +85,11 @@ class WorkoutApiTest {
 
     @Test
     void modifier_une_seance_recalcule_ses_calories() {
-        long id = idOf(create(lea, workout("RUNNING", TODAY, 60, "10", 7)));
+        long id = idOf(create(lea, json("RUNNING", TODAY, 60, "10", 7)));
 
         MvcTestResult updated = mvc.put().uri("/api/workouts/" + id).cookie(lea).with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(workout("RUNNING", TODAY, 30, "5", 7))
+                .content(json("RUNNING", TODAY, 30, "5", 7))
                 .exchange();
 
         assertThat(updated).hasStatus(HttpStatus.OK)
@@ -96,7 +98,7 @@ class WorkoutApiTest {
 
     @Test
     void supprimer_une_seance() {
-        long id = idOf(create(lea, workout("YOGA", TODAY, 60, null, 2)));
+        long id = idOf(create(lea, json("YOGA", TODAY, 60, null, 2)));
 
         assertThat(mvc.delete().uri("/api/workouts/" + id).cookie(lea).with(csrf()))
                 .hasStatus(HttpStatus.NO_CONTENT);
@@ -106,7 +108,7 @@ class WorkoutApiTest {
 
     @Test
     void une_seance_incoherente_est_refusee_champ_par_champ() {
-        MvcTestResult refused = create(lea, workout("RUNNING", TODAY.plusDays(1), 0, "-2", 11));
+        MvcTestResult refused = create(lea, json("RUNNING", TODAY.plusDays(1), 0, "-2", 11));
 
         assertThat(refused).hasStatus(HttpStatus.BAD_REQUEST);
         assertThat(refused).bodyJson().extractingPath("$.errors.date")
@@ -125,23 +127,6 @@ class WorkoutApiTest {
     }
 
     private MvcTestResult create(Cookie athlete, String json) {
-        return mvc.post().uri("/api/workouts").cookie(athlete).with(csrf())
-                .contentType(MediaType.APPLICATION_JSON).content(json)
-                .exchange();
-    }
-
-    private static String workout(String sport, LocalDate date, int minutes, String km, int effort) {
-        return """
-                {"sport": "%s", "date": "%s", "durationMinutes": %d, "distanceKm": %s,
-                 "effort": %d, "notes": "séance de test"}
-                """.formatted(sport, date, minutes, km, effort);
-    }
-
-    private static long idOf(MvcTestResult result) throws RuntimeException {
-        try {
-            return ((Number) JsonPath.read(result.getResponse().getContentAsString(), "$.id")).longValue();
-        } catch (java.io.UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return new Workouts(mvc).create(athlete, json);
     }
 }

@@ -2,10 +2,10 @@ package fr.endurance.stats;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.List;
 
-import fr.endurance.user.User;
-import fr.endurance.user.UserRepository;
-import fr.endurance.user.UnknownUserException;
+import fr.endurance.user.ProfileService;
+import fr.endurance.workout.Workout;
 import fr.endurance.workout.WorkoutRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,20 +17,21 @@ public class StatsService {
     private static final int HISTORY_DAYS = 366;
 
     private final WorkoutRepository workouts;
-    private final UserRepository users;
+    private final ProfileService profiles;
     private final Clock clock;
 
-    public StatsService(WorkoutRepository workouts, UserRepository users, Clock clock) {
+    public StatsService(WorkoutRepository workouts, ProfileService profiles, Clock clock) {
         this.workouts = workouts;
-        this.users = users;
+        this.profiles = profiles;
         this.clock = clock;
     }
 
     @Transactional(readOnly = true)
     public WeeklyStats thisWeek(Long userId) {
-        User user = users.findById(userId).orElseThrow(UnknownUserException::new);
+        int goal = profiles.get(userId).getWeeklyGoalMinutes();
         LocalDate today = LocalDate.now(clock);
-        var history = workouts.findByUserIdAndDateBetween(userId, today.minusDays(HISTORY_DAYS), today.plusDays(6));
-        return WeeklyStats.compute(history, today, user.getWeeklyGoalMinutes());
+        List<Workout> history = workouts.findByUserIdAndDateBetween(
+                userId, today.minusDays(HISTORY_DAYS), today.plusDays(6));
+        return WeeklyStats.compute(history, today, goal);
     }
 }

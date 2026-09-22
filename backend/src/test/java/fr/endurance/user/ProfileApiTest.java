@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 import fr.endurance.support.Accounts;
 import fr.endurance.support.IntegrationTest;
+import fr.endurance.support.Workouts;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,11 +44,7 @@ class ProfileApiTest {
     void le_nouveau_poids_sert_aux_seances_suivantes() {
         updateProfile("Léa", "80", 150);
 
-        assertThat(mvc.post().uri("/api/workouts").cookie(lea).with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"sport": "RUNNING", "date": "%s", "durationMinutes": 60, "effort": 6}
-                        """.formatted(LocalDate.now())))
+        assertThat(new Workouts(mvc).create(lea, "RUNNING", LocalDate.now(), 60, null, 6))
                 .bodyJson().extractingPath("$.calories").isEqualTo(640);
     }
 

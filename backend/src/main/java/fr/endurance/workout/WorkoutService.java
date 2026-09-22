@@ -3,9 +3,7 @@ package fr.endurance.workout;
 import java.math.BigDecimal;
 
 import fr.endurance.common.ResourceNotFoundException;
-import fr.endurance.user.User;
-import fr.endurance.user.UserRepository;
-import fr.endurance.user.UnknownUserException;
+import fr.endurance.user.ProfileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkoutService {
 
     private final WorkoutRepository workouts;
-    private final UserRepository users;
+    private final ProfileService profiles;
 
-    public WorkoutService(WorkoutRepository workouts, UserRepository users) {
+    public WorkoutService(WorkoutRepository workouts, ProfileService profiles) {
         this.workouts = workouts;
-        this.users = users;
+        this.profiles = profiles;
     }
 
     public Workout create(Long userId, WorkoutDetails details) {
@@ -49,6 +47,6 @@ public class WorkoutService {
     }
 
     private BigDecimal weightOf(Long userId) {
-        return users.findById(userId).map(User::getWeightKg).orElseThrow(UnknownUserException::new);
+        return profiles.get(userId).getWeightKg();
     }
 }

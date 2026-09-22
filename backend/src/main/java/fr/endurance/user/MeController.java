@@ -3,7 +3,6 @@ package fr.endurance.user;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,23 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/me")
 public class MeController {
 
-    private final CurrentUser currentUser;
+    private final ProfileService profiles;
 
-    public MeController(CurrentUser currentUser) {
-        this.currentUser = currentUser;
+    public MeController(ProfileService profiles) {
+        this.profiles = profiles;
     }
 
     @GetMapping
-    @Transactional(readOnly = true)
     public UserResponse me(@AuthenticationPrincipal Jwt jwt) {
-        return UserResponse.from(currentUser.of(jwt));
+        return UserResponse.from(profiles.get(CurrentUser.idOf(jwt)));
     }
 
     @PutMapping
-    @Transactional
     public UserResponse update(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ProfileUpdate update) {
-        User user = currentUser.of(jwt);
-        user.updateProfile(update);
-        return UserResponse.from(user);
+        return UserResponse.from(profiles.update(CurrentUser.idOf(jwt), update));
     }
 }

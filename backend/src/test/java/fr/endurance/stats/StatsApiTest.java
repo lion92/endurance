@@ -1,17 +1,16 @@
 package fr.endurance.stats;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.time.LocalDate;
 
 import fr.endurance.support.Accounts;
 import fr.endurance.support.IntegrationTest;
+import fr.endurance.support.Workouts;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
@@ -46,11 +45,7 @@ class StatsApiTest {
     }
 
     private void create(Cookie athlete, String sport, int minutes, String km) {
-        assertThat(mvc.post().uri("/api/workouts").cookie(athlete).with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"sport": "%s", "date": "%s", "durationMinutes": %d, "distanceKm": %s, "effort": 5}
-                        """.formatted(sport, LocalDate.now(), minutes, km)))
+        assertThat(new Workouts(mvc).create(athlete, sport, LocalDate.now(), minutes, km, 5))
                 .hasStatus(HttpStatus.CREATED);
     }
 }
