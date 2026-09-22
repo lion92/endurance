@@ -3,6 +3,7 @@ package fr.endurance.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -16,10 +17,15 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login",
+                                "/api/auth/logout").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated())
-                // Pas de session HTTP : chaque requête prouvera qui elle est (le jeton, bientôt).
+                // Chaque requête prouve qui elle est avec le JWT du cookie, vérifié par le décodeur.
+                .oauth2ResourceServer(resourceServer -> resourceServer
+                        .bearerTokenResolver(new CookieBearerTokenResolver())
+                        .jwt(Customizer.withDefaults()))
+                // Pas de session HTTP : le serveur ne garde rien en mémoire entre deux requêtes.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Protection CSRF façon SPA : jeton dans le cookie XSRF-TOKEN, renvoyé en en-tête.
                 .csrf(csrf -> csrf.spa())

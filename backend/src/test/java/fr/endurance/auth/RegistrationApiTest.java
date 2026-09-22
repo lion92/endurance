@@ -2,13 +2,12 @@ package fr.endurance.auth;
 
 import static fr.endurance.support.TestData.uniqueEmail;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
+import fr.endurance.support.Accounts;
 import fr.endurance.support.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
@@ -66,12 +65,6 @@ class RegistrationApiTest {
     }
 
     private MvcTestResult register(String email, String password, String displayName) {
-        return mvc.post().uri("/api/auth/register")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"email": "%s", "password": "%s", "displayName": "%s"}
-                        """.formatted(email, password, displayName))
-                .exchange();
+        return new Accounts(mvc).register(email, password, displayName);
     }
 }

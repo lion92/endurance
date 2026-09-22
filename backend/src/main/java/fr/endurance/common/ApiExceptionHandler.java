@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import fr.endurance.auth.EmailAlreadyUsedException;
+import fr.endurance.auth.InvalidCredentialsException;
+import fr.endurance.user.UnknownUserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
@@ -33,5 +35,10 @@ public class ApiExceptionHandler {
     @ExceptionHandler(EmailAlreadyUsedException.class)
     ProblemDetail onEmailAlreadyUsed(EmailAlreadyUsedException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+    }
+
+    @ExceptionHandler({InvalidCredentialsException.class, UnknownUserException.class})
+    ProblemDetail onUnauthenticated(RuntimeException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 }
