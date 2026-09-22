@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Un nouveau push annule la vérification précédente de la même branche.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: API — tests (PostgreSQL par Testcontainers)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - run: ./mvnw -B verify
+
+  frontend:
+    name: Site — lint, tests, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    name: De bout en bout — la pile Docker complète
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Secrets jetables pour cette exécution
+        run: |
+          echo "DB_PASSWORD=$(openssl rand -hex 16)" >> .env
+          echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
+      - name: Démarrer la base, l'API et le site
+        run: docker compose -f compose.prod.yaml up -d --build --wait
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Lancer Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm test
+      - name: Journaux des conteneurs en cas d'échec
+        if: failure()
+        run: docker compose -f compose.prod.yaml logs
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-traces
+          path: e2e/test-results/
