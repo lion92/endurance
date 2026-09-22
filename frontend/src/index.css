@@ -113,3 +113,21 @@ input[aria-invalid='true'] { border-color: var(--danger); }
 .topbar nav a.active { background: var(--accent-soft); color: var(--accent); }
 .who { display: flex; align-items: center; gap: 1rem; }
 .content { max-width: 1100px; margin: 0 auto; padding: 2rem; display: grid; gap: 1.5rem; }
+
+/* --- Séances */
+.page-head { display: flex; align-items: center; justify-content: space-between; }
+.empty { text-align: center; color: var(--muted); padding: 2.5rem; }
+.small { font-size: 0.82rem; font-weight: 400; }
+.workout-form { display: grid; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+@media (max-width: 760px) { .grid-3 { grid-template-columns: 1fr; } }
+.actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+input[type='range'] { accent-color: var(--accent); padding: 0; }
+
+table.workouts { width: 100%; border-collapse: collapse; }
+.workouts th { text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 0 0.75rem 0.75rem; }
+.workouts td { padding: 0.85rem 0.75rem; border-top: 1px solid var(--line); vertical-align: middle; }
+.sport-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.5rem; }
+.row-actions { text-align: right; white-space: nowrap; }
+.row-actions button { padding: 0.4rem 0.7rem; margin-left: 0.35rem; font-size: 0.85rem; }
+.pager { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; color: var(--muted); }

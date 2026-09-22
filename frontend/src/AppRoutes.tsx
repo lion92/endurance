@@ -4,6 +4,7 @@ import { Layout } from './components/Layout'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { WorkoutsPage } from './pages/WorkoutsPage'
 
 export function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ export function AppRoutes() {
       <Route element={<RequireAuth />}>
         <Route element={<Layout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="seances" element={<WorkoutsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

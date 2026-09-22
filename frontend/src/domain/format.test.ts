@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDistance, formatDuration } from './format'
+import { formatDistance, formatDuration, parseDecimal } from './format'
 
 describe('formatDuration', () => {
   it('affiche les minutes seules sous une heure', () => {
@@ -22,5 +22,16 @@ describe('formatDistance', () => {
 
   it("n'affiche rien quand la distance est inconnue", () => {
     expect(formatDistance(null)).toBe('—')
+  })
+})
+
+describe('parseDecimal', () => {
+  it('accepte la virgule comme le point', () => {
+    expect(parseDecimal('42,5')).toBe(42.5)
+    expect(parseDecimal('42.5')).toBe(42.5)
+  })
+
+  it('rend null pour un champ vide', () => {
+    expect(parseDecimal('  ')).toBeNull()
   })
 })

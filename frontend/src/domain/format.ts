@@ -10,3 +10,9 @@ export function formatDuration(minutes: number): string {
 export function formatDistance(km: number | null): string {
   return km === null ? '—' : `${decimal.format(km)} km`
 }
+
+/** Un Français tape « 42,5 » : on accepte la virgule, et un champ vide veut dire « inconnu ». */
+export function parseDecimal(text: string): number | null {
+  const cleaned = text.trim().replace(',', '.')
+  return cleaned === '' ? null : Number(cleaned)
+}
