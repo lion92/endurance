@@ -1,0 +1,21 @@
+# Environnement de développement : la base PostgreSQL seule.
+# L'API et le site se lancent depuis l'IDE (ou mvnw / npm) pendant qu'on code.
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: endurance
+      POSTGRES_USER: endurance
+      POSTGRES_PASSWORD: endurance
+    ports:
+      - "127.0.0.1:5442:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U endurance -d endurance"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
