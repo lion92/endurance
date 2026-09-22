@@ -20,6 +20,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login",
                                 "/api/auth/logout").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        // Les erreurs sont ré-expédiées vers /error : s'il était protégé, un 403
+                        // ou un 400 ressortirait déguisé en 401.
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 // Chaque requête prouve qui elle est avec le JWT du cookie, vérifié par le décodeur.
                 .oauth2ResourceServer(resourceServer -> resourceServer
