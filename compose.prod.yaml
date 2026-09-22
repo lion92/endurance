@@ -1,0 +1,38 @@
+# L'application complète, comme en production : docker compose -f compose.prod.yaml up --build
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: endurance
+      POSTGRES_USER: endurance
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant, voir .env.example}
+    volumes:
+      - prod-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U endurance -d endurance"]
+      interval: 5s
+      retries: 10
+    # Aucun port publié : la base n'est joignable QUE par l'API, sur le réseau interne.
+
+  api:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/endurance
+      DB_USER: endurance
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET manquant, voir .env.example}
+      JWT_SECURE_COOKIE: ${JWT_SECURE_COOKIE:-true}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8090}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  prod-data:
