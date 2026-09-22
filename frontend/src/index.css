@@ -46,7 +46,8 @@ button:disabled { opacity: 0.6; cursor: progress; }
 button.secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
 button.danger { background: transparent; color: var(--danger); padding: 0.4rem 0.6rem; }
 
-label { display: grid; gap: 0.35rem; font-size: 0.9rem; font-weight: 600; }
+.field { display: grid; gap: 0.35rem; }
+label { font-size: 0.9rem; font-weight: 600; }
 input, select, textarea {
   font: inherit;
   font-weight: 400;
@@ -63,3 +64,52 @@ input[aria-invalid='true'] { border-color: var(--danger); }
 .alert { background: var(--danger-soft); color: var(--danger); padding: 0.75rem 1rem; border-radius: 10px; }
 .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.25rem; }
 .muted { color: var(--muted); }
+
+/* --- Mise en page */
+.stack { display: grid; gap: 1rem; }
+.center { text-align: center; padding: 3rem; }
+.logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; color: var(--accent); }
+
+.auth {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+.auth-brand {
+  height: 100%;
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  background: linear-gradient(135deg, #ff5a1f 0%, #ff8a3d 55%, #ffb347 100%);
+  color: #fff;
+}
+.auth-brand .logo { color: #fff; font-size: 3rem; }
+.auth-brand p { font-size: 1.35rem; max-width: 22ch; margin: 0; opacity: 0.95; }
+.auth-card { width: min(420px, 90%); margin: 0 auto; display: grid; gap: 1.25rem; }
+@media (max-width: 760px) {
+  .auth { grid-template-columns: 1fr; }
+  .auth-brand { padding: 2rem; }
+}
+
+.shell { min-height: 100vh; }
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.9rem 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.topbar nav { display: flex; gap: 0.25rem; flex: 1; }
+.topbar nav a {
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.topbar nav a.active { background: var(--accent-soft); color: var(--accent); }
+.who { display: flex; align-items: center; gap: 1rem; }
+.content { max-width: 1100px; margin: 0 auto; padding: 2rem; display: grid; gap: 1.5rem; }

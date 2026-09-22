@@ -1,0 +1,21 @@
+import { Navigate, Route, Routes } from 'react-router'
+import { RequireAuth } from './auth/RequireAuth'
+import { Layout } from './components/Layout'
+import { DashboardPage } from './pages/DashboardPage'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
+
+export function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/connexion" element={<LoginPage />} />
+      <Route path="/inscription" element={<RegisterPage />} />
+      <Route element={<RequireAuth />}>
+        <Route element={<Layout />}>
+          <Route index element={<DashboardPage />} />
+        </Route>
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}

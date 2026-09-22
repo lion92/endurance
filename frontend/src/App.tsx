@@ -1,3 +1,13 @@
+import { BrowserRouter } from 'react-router'
+import { AppRoutes } from './AppRoutes'
+import { AuthProvider } from './auth/AuthContext'
+
 export default function App() {
-  return <h1>Endurance</h1>
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  )
 }
