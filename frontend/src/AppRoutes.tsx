@@ -3,6 +3,7 @@ import { RequireAuth } from './auth/RequireAuth'
 import { Layout } from './components/Layout'
 import { DashboardPage } from './pages/DashboardPage'
 import { LoginPage } from './pages/LoginPage'
+import { ProfilePage } from './pages/ProfilePage'
 import { RegisterPage } from './pages/RegisterPage'
 import { WorkoutsPage } from './pages/WorkoutsPage'
 
@@ -15,6 +16,7 @@ export function AppRoutes() {
         <Route element={<Layout />}>
           <Route index element={<DashboardPage />} />
           <Route path="seances" element={<WorkoutsPage />} />
+          <Route path="profil" element={<ProfilePage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
