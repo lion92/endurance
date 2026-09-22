@@ -131,3 +131,29 @@ table.workouts { width: 100%; border-collapse: collapse; }
 .row-actions { text-align: right; white-space: nowrap; }
 .row-actions button { padding: 0.4rem 0.7rem; margin-left: 0.35rem; font-size: 0.85rem; }
 .pager { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; color: var(--muted); }
+
+/* --- Tableau de bord */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+.stat { display: grid; gap: 0.35rem; }
+.stat-label { color: var(--muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-value { font-size: 2rem; letter-spacing: -0.03em; }
+.streak { background: var(--accent-soft); color: var(--accent); font-weight: 700; padding: 0.5rem 1rem; border-radius: 999px; }
+.goal { display: grid; gap: 0.75rem; }
+.goal-head { display: flex; justify-content: space-between; align-items: baseline; }
+.goal-track { height: 14px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.goal-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; }
+.goal-fill.done { background: var(--success); }
+.goal-note { margin: 0; font-weight: 600; }
+.two-cols { display: grid; grid-template-columns: 3fr 2fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 860px) { .two-cols { grid-template-columns: 1fr; } }
+.two-cols h2 { font-size: 1.05rem; margin-bottom: 1rem; }
+.goal h2 { font-size: 1.05rem; }
+.week-chart { width: 100%; height: auto; }
+.bar-bg { fill: var(--bg); }
+.bar { fill: var(--accent); }
+.bar-day { fill: var(--muted); font-size: 13px; font-weight: 600; }
+.sports { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.sport-line { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 0.35rem; }
+.sport-track { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.sport-track div { height: 100%; border-radius: 999px; }

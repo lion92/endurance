@@ -14,3 +14,11 @@ export const notLoggedIn = http.get('/api/me', () =>
 )
 
 export const loggedInAs = (user: User) => http.get('/api/me', () => HttpResponse.json(user))
+
+export const emptyWeek = http.get('/api/stats/week', () =>
+  HttpResponse.json({
+    weekStart: '2026-09-21', weekEnd: '2026-09-27', sessions: 0, totalMinutes: 0,
+    totalDistanceKm: 0, totalCalories: 0, minutesPerDay: [0, 0, 0, 0, 0, 0, 0],
+    minutesPerSport: [], goalMinutes: 150, goalPercent: 0, streakDays: 0,
+  }),
+)

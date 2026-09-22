@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
-import { lea, loggedInAs, notLoggedIn } from '../test/fixtures'
+import { emptyWeek, lea, loggedInAs, notLoggedIn } from '../test/fixtures'
 import { renderApp } from '../test/render'
 import { server } from '../test/server'
 
@@ -15,7 +15,7 @@ describe('connexion', () => {
   })
 
   it('mène au tableau de bord une fois connecté', async () => {
-    server.use(notLoggedIn, http.post('/api/auth/login', () => HttpResponse.json(lea)))
+    server.use(notLoggedIn, emptyWeek, http.post('/api/auth/login', () => HttpResponse.json(lea)))
     const { user } = renderApp('/')
 
     await user.type(await screen.findByLabelText('Email'), 'lea@endurance.fr')
@@ -42,7 +42,7 @@ describe('connexion', () => {
   })
 
   it('reprend la session au rechargement de la page', async () => {
-    server.use(loggedInAs(lea))
+    server.use(loggedInAs(lea), emptyWeek)
 
     renderApp('/')
 
@@ -50,7 +50,7 @@ describe('connexion', () => {
   })
 
   it('ramène à la page de connexion après la déconnexion', async () => {
-    server.use(loggedInAs(lea), http.post('/api/auth/logout', () => new HttpResponse(null, { status: 204 })))
+    server.use(loggedInAs(lea), emptyWeek, http.post('/api/auth/logout', () => new HttpResponse(null, { status: 204 })))
     const { user } = renderApp('/')
 
     await user.click(await screen.findByRole('button', { name: 'Se déconnecter' }))
@@ -84,6 +84,7 @@ describe('inscription', () => {
   it('connecte directement après une inscription réussie', async () => {
     server.use(
       notLoggedIn,
+      emptyWeek,
       http.post('/api/auth/register', () => HttpResponse.json(lea, { status: 201 })),
       http.post('/api/auth/login', () => HttpResponse.json(lea)),
     )
