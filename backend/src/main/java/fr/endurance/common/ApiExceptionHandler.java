@@ -41,4 +41,9 @@ public class ApiExceptionHandler {
     ProblemDetail onUnauthenticated(RuntimeException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    ProblemDetail onNotFound(ResourceNotFoundException exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+    }
 }
