@@ -50,6 +50,12 @@ public class User {
         this.displayName = displayName;
     }
 
+    public void updateProfile(ProfileUpdate update) {
+        this.displayName = update.displayName().strip();
+        this.weightKg = update.weightKg();
+        this.weeklyGoalMinutes = update.weeklyGoalMinutes();
+    }
+
     public Long getId() {
         return id;
     }
